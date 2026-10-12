@@ -25,10 +25,19 @@ This is **not** extra Metal functionality. It only **advertises** a few Vulkan 1
 
 ## Install (Sikarugir)
 
-1. Download `libvulkan_kosmickrisp.dylib` from [Releases](https://github.com/truwa/kosmickrisp-compat/releases).
-2. Quit Steam / the wrapper.
-3. Right click on the Sikarugir wrapper app, select "Show Package Contents", and then navigate to "Contents/Frameworks".
-4. Back up existing file by renaming it, then copy the downloaded  `libvulkan_kosmickrisp.dylib` file.
+Do this only on **M1–M4**. On **M5 / M6**, current Sikarugir already runs DOOM (2016) without this file.
+
+1. Open the [Releases](https://github.com/truwa/kosmickrisp-compat/releases) page and download **`libvulkan_kosmickrisp-x86_64.zip`** (not the Source code zip).
+2. Double-click the zip in Finder so it unpacks. You should see a file named **`libvulkan_kosmickrisp.dylib`**. Leave that window open.
+3. Fully quit the Sikarugir wrapper **and** Steam (wrapper menu → Quit, then Steam → Quit Steam). Do not leave either running in the menu bar.
+4. In Finder, find your Sikarugir app (the `.app` you double-click to play, for example `MyDoom.app`).
+5. **Right-click** that app → **Show Package Contents**.
+6. Open **Contents** → **Frameworks**. You should see an existing `libvulkan_kosmickrisp.dylib`.
+7. Rename that existing file to `libvulkan_kosmickrisp.dylib.bak` (this is your backup).
+8. Drag the **new** `libvulkan_kosmickrisp.dylib` from step 2 into this Frameworks folder. Copy only the `.dylib`, not the `.zip`.
+9. Close the package windows and start the wrapper as usual.
+
+To undo: delete the new `.dylib` and rename `.bak` back to `libvulkan_kosmickrisp.dylib`.
 
 ## Optional error dump
 
