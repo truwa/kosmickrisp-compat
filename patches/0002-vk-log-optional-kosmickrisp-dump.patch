@@ -1,0 +1,72 @@
+From: truwa <oztruwa@gmail.com>
+Subject: vulkan/log: optional KosmicKrisp error dump via KOSMICKRISP_DUMP_LOG
+
+Sikarugir often does not inherit MESA_LOG. Dump vk_errorf lines only when
+KOSMICKRISP_DUMP_LOG is set (1, or an absolute path). Default: no Desktop
+log file.
+
+---
+ src/vulkan/runtime/vk_log.c | 52 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+
+diff --git a/src/vulkan/runtime/vk_log.c b/src/vulkan/runtime/vk_log.c
+--- a/src/vulkan/runtime/vk_log.c
++++ b/src/vulkan/runtime/vk_log.c
+@@ -32,8 +32,76 @@
+ #include "vk_physical_device.h"
+ 
+ #include "util/ralloc.h"
+ #include "util/log.h"
+ 
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++static void
++kk_dump_vk_error(VkResult error, const char *file, int line, const char *detail)
++{
++   const char *opt = getenv("KOSMICKRISP_DUMP_LOG");
++   if (!opt || opt[0] == '\0' || strcmp(opt, "0") == 0)
++      return;
++
++   char home_path[1024];
++   const char *paths[2];
++   unsigned npaths = 0;
++
++   if (opt[0] == '/') {
++      paths[npaths++] = opt;
++   } else {
++      const char *home = getenv("HOME");
++      if (home) {
++         snprintf(home_path, sizeof(home_path), "%s/Desktop/kosmickrisp.log",
++                  home);
++         paths[npaths++] = home_path;
++      }
++      paths[npaths++] = "/tmp/kosmickrisp.log";
++   }
++
++   for (unsigned i = 0; i < npaths; i++) {
++      FILE *f = fopen(paths[i], "a");
++      if (!f)
++         continue;
++      fprintf(f, "%s:%d: %s%s%s\n", file, line, vk_Result_to_str(error),
++              detail ? " " : "", detail ? detail : "");
++      fclose(f);
++   }
++}
++
+ #include <stdio.h>
+ 
+ static struct vk_device *
+ vk_object_to_device(struct vk_object_base *obj)
+@@
+    if (format) {
+       char *message = ralloc_vasprintf(NULL, format, va);
++      kk_dump_vk_error(error, file, line, message);
+ 
+       if (object) {
+@@
+       ralloc_free(message);
+    } else {
++      kk_dump_vk_error(error, file, line, NULL);
+       if (object) {

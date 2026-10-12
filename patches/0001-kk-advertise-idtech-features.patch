@@ -1,0 +1,39 @@
+From: truwa <oztruwa@gmail.com>
+Subject: kosmickrisp: advertise depthBounds and fillModeNonSolid for idTech
+
+idTech (DOOM 2016) and idTech 6.5 (Wolfenstein II) enable these at
+vkCreateDevice without querying. Upstream 26.2.4 leaves them false, so
+CreateDevice returns VK_ERROR_FEATURE_NOT_PRESENT on M1-M4.
+
+Advertise the bits only. Do not call Metal setDepthTestMinBound; wiring
+that on M5 made Wolf II world lighting worse.
+
+---
+ src/kosmickrisp/vulkan/kk_physical_device.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/kosmickrisp/vulkan/kk_physical_device.c b/src/kosmickrisp/vulkan/kk_physical_device.c
+index 0000000..1111111 100644
+--- a/src/kosmickrisp/vulkan/kk_physical_device.c
++++ b/src/kosmickrisp/vulkan/kk_physical_device.c
+@@ -208,8 +208,22 @@ kk_get_device_features(
+    *features = (struct vk_features){
+       /* Vulkan 1.0 */
+       .alphaToOne = true,
+       .depthBiasClamp = true,
++      /* Metal 4 exposes native depth bounds on Apple GPU family 10+ (M5).
++       * idTech still enables the feature without querying it, so
++       * vkCreateDevice fails with VK_ERROR_FEATURE_NOT_PRESENT on M1-M4.
++       * Advertise it on every family; do not wire the Metal test — Wolf II
++       * lighting got worse when setDepthTestMinBound was actually applied.
++       */
++      .depthBounds = true,
+       .depthClamp = true,
+       .drawIndirectFirstInstance = true,
+       .dualSrcBlend = true,
+-      .fillModeNonSolid = false,
++      /* idTech 6.5 (Wolfenstein II) enables wireframe without querying. */
++      .fillModeNonSolid = true,
+       .fragmentStoresAndAtomics = true,
+       .fullDrawIndexUint32 = true,
+       .imageCubeArray = true,

@@ -1,0 +1,10 @@
+mesa-26.2.4.tar.xz
+mesa-26.2.4/
+deps/
+venv/
+meson/
+dist/
+dist-x86_64/
+*.dylib
+.DS_Store
+.cursor/
