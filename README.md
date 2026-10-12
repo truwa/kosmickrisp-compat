@@ -27,7 +27,8 @@ This is **not** extra Metal functionality. It only **advertises** a few Vulkan 1
 
 1. Download `libvulkan_kosmickrisp.dylib` from [Releases](https://github.com/truwa/kosmickrisp-compat/releases).
 2. Quit Steam / the wrapper.
-3. Back up, then replace `YourWrapper.app/Contents/Frameworks/libvulkan_kosmickrisp.dylib`.
+3. Right click on the Sikarugir wrapper app, select "Show Package Contents", and then navigate to "Contents/Frameworks".
+4. Back up existing file by renaming it, then copy the downloaded  `libvulkan_kosmickrisp.dylib` file.
 
 ## Optional error dump
 
